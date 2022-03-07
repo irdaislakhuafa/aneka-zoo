@@ -3,6 +3,7 @@ package main
 import (
 	"aneka-zoo/database"
 	"aneka-zoo/entities"
+	"aneka-zoo/requests_handler"
 	"aneka-zoo/services"
 	"flag"
 	"fmt"
@@ -26,21 +27,20 @@ func main() {
 
 	// open database connection
 	database.OpenConnection(username, password, dbHost, dbPort, dbName)
-	// dbUrl := username + ":" + password + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
-	// db, err := gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
-
-	// if err != nil {
-	// 	log.Fatal("Error create connection to database :", err.Error())
-	// } else {
-	// 	database.SetConnection(db)
-	// 	log.Println("Succes create connection to database :", dbName)
-	// }
 
 	// auto migrate
 	services.AutoMigration(&entities.Animal{})
 
 	// create router gin
 	router := gin.Default()
+	api := router.Group("/api")
+
+	// apis router
+	api.POST("/animal/new", requests_handler.NewAnimal)
+	api.PUT("/animal/update/:id", requests_handler.UpdateAnimal)
+	api.DELETE("/animal/delete/:id", requests_handler.DeleteAnimal)
+	api.GET("/animal/get/:id", requests_handler.GetAnimalById)
+	api.GET("/animal/get/all", requests_handler.GetAllAnimals)
 
 	// run router
 	appPort = ":" + appPort

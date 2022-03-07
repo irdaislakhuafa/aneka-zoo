@@ -14,3 +14,13 @@ func Create(entity interface{}) (result *gorm.DB) {
 	}
 	return
 }
+
+func Update(entity interface{}) (result *gorm.DB) {
+	result = database.GetConnection().Save(entity)
+	err := result.Error
+	if err != nil {
+		log.Println("Error >>>", err.Error())
+	}
+	return result
+}
+

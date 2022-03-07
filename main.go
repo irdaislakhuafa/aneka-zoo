@@ -37,6 +37,7 @@ func main() {
 
 	// apis router
 	api.POST("/animal/new", requests_handler.NewAnimal)
+	api.PUT("/animal/update/:id", requests_handler.UpdateAnimal)
 
 	// run router
 	appPort = ":" + appPort

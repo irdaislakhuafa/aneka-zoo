@@ -6,11 +6,8 @@ import (
 	"aneka-zoo/services"
 	"flag"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -28,15 +25,16 @@ func main() {
 	flag.Parse()
 
 	// open database connection
-	dbUrl := username + ":" + password + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
-	db, err := gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
+	database.OpenConnection(username, password, dbHost, dbPort, dbName)
+	// dbUrl := username + ":" + password + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
+	// db, err := gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
 
-	if err != nil {
-		log.Fatal("Error create connection to database :", err.Error())
-	} else {
-		database.SetConnection(db)
-		log.Println("Succes create connection to database :", dbName)
-	}
+	// if err != nil {
+	// 	log.Fatal("Error create connection to database :", err.Error())
+	// } else {
+	// 	database.SetConnection(db)
+	// 	log.Println("Succes create connection to database :", dbName)
+	// }
 
 	// auto migrate
 	services.AutoMigration(&entities.Animal{})

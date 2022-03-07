@@ -71,6 +71,7 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 
 	defer func() {
 		if r := recover(); r != nil {
+			status = http.StatusInternalServerError
 			response["data"] = nil
 			response["message"] = r
 			reqAndRes.JSON(status, response)
@@ -80,38 +81,56 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 	// get id
 	id, err := strconv.Atoi(reqAndRes.Param("id"))
 
-	switch {
-	case err != nil: // if error is exists
+	if err != nil {
+		status = http.StatusBadRequest
 		response["data"] = nil
 		response["message"] = "ID must be int or number!"
-
-	case services.AnimalExistsById(id): // if animal with id is exists
-		err = reqAndRes.ShouldBindJSON(&animal)
+	} else {
+		err := reqAndRes.ShouldBindJSON(&animal)
+		// FIXME :please finx me :"D
 		if err != nil {
+			status = http.StatusBadRequest
 			response["data"] = nil
 			response["message"] = "pleace check your JSON format!"
 		} else {
-			services.Update(&animal)
+			animal.ID = id
+			if services.AnimalExistsById(id) {
+				response["message"] = "success updated data!"
+				services.Update(&animal)
+			} else {
+				services.Create(&animal)
+				response["message"] = "data does not exists, success created new data!"
+				// response["message"] = id
+			}
 			response["data"] = animal
-			response["message"] = "success updated data!"
+
 		}
 
-	case !(services.AnimalExistsById(id)): // if animal doesn't exists
-		err = reqAndRes.ShouldBindJSON(&animal)
-		if err != nil {
-			response["data"] = nil
-			response["message"] = "pleace check your JSON format!"
-		} else {
-			err = services.Update(&animal).Error
+		/* if services.AnimalExistsById(id) {
+			err = reqAndRes.ShouldBindJSON(&animal)
 			if err != nil {
-				// response["message"] = "data does not exists, success created new data!"
-				response["message"] = "data already exists"
+				status = http.StatusBadRequest
 				response["data"] = nil
+				response["message"] = "pleace check your JSON format!"
 			} else {
+				status = http.StatusOK
+				animal.ID = id
+				services.Update(&animal)
+				response["data"] = animal
+				response["message"] = "success updated data!"
+			}
+		} else {
+			if err != nil {
+				status = http.StatusBadRequest
+				response["data"] = nil
+				response["message"] = "pleace check your JSON format!"
+			} else {
+				animal.ID = id
+				services.Update(&animal)
 				response["message"] = "data does not exists, success created new data!"
 				response["data"] = animal
 			}
-		}
+		} */
 	}
 
 	reqAndRes.JSON(status, response)
@@ -122,19 +141,32 @@ func DeleteAnimal(reqAndRes *gin.Context) {
 	status := http.StatusOK
 	var deletedAnimal entities.Animal
 
+	// if internal server error
+	defer func() {
+		if r := recover(); r != nil {
+			response["data"] = nil
+			response["message"] = r
+			status = http.StatusInternalServerError
+			reqAndRes.JSON(status, response)
+		}
+	}()
+
 	// convert id string to int
 	id, err := strconv.Atoi(reqAndRes.Param("id"))
 
 	switch {
 	case err != nil: // if error is exists
+		status = http.StatusBadRequest
 		response["data"] = nil
 		response["message"] = "ID must be int or number!"
 	case err == nil:
 		err = services.FindAnimalById(id, &deletedAnimal).Error
 		if err != nil {
+			status = http.StatusNotFound
 			response["data"] = nil
 			response["message"] = "data doesn't exists!"
 		} else {
+			status = http.StatusOK
 			services.Delete(&entities.Animal{}, id)
 			response["data"] = deletedAnimal
 			response["message"] = "success deleted data!"
@@ -142,4 +174,32 @@ func DeleteAnimal(reqAndRes *gin.Context) {
 	}
 
 	reqAndRes.JSON(status, response)
+}
+
+func GetAnimalById(reqAndRes *gin.Context) {
+	response := make(map[string]interface{})
+	status := http.StatusOK
+
+	id, err := strconv.Atoi(reqAndRes.Param("id"))
+
+	if err != nil {
+		status = http.StatusBadRequest
+		response["data"] = nil
+		response["message"] = "pleace check your JSON format!"
+	} else {
+		animal := entities.Animal{}
+		if services.AnimalExistsById(id) {
+			status = http.StatusOK
+			services.FindAnimalById(id, &animal)
+			response["data"] = animal
+			response["message"] = "success get data!"
+		} else {
+			status = http.StatusNotFound
+			response["data"] = nil
+			response["message"] = "data not found!"
+		}
+	}
+
+	reqAndRes.JSON(status, response)
+
 }

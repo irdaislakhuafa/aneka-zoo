@@ -39,6 +39,7 @@ func main() {
 	api.POST("/animal/new", requests_handler.NewAnimal)
 	api.PUT("/animal/update/:id", requests_handler.UpdateAnimal)
 	api.DELETE("/animal/delete/:id", requests_handler.DeleteAnimal)
+	api.GET("/animal/get/:id", requests_handler.GetAnimalById)
 
 	// run router
 	appPort = ":" + appPort

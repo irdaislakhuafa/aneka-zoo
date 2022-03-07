@@ -63,3 +63,13 @@ This is a simple rest api that I made using the Go-Lang programming language. In
 I set up postman collections in `assets` folder for testing api in postman and I also set up the sample database in `assets` folder. You can easily change the `database name`, `username`, `password`, `application port`, and `others` by adding command line option flags just type the command `go run main.go --help` information will appear as below.
 
 ![flags](screenshots/flags.png)
+
+Example of flag usage :
+
+<pre>
+<code>
+    ~ go run main.go -app-port=9000 -db-port=3306
+</code>
+</pre>
+
+Then the application will run on port `9000` with database port `3306`.

@@ -20,7 +20,7 @@ This is a simple rest api that I made using the Go-Lang programming language. In
   Here my `GOPATH`.
   ![gopath](./screenshots/gopath.png)
 
-  So I did the command below. depending on where your `GOPATH` and go to the `src` folder folder. and make sure you have [`git`](https://git-scm.com/downloads) installed.
+  So I did the command below. depending on where your `GOPATH` and go to the `src` folder. and make sure you have [`git`](https://git-scm.com/downloads) installed.
   <pre>
   <code>
     ~ cd "/media/My_Drive/Kelas Terbuka/Projects/Golang/src"
@@ -30,6 +30,7 @@ This is a simple rest api that I made using the Go-Lang programming language. In
   </pre>
 
 - Download modules dependencies
+
   I use several dependencies to make REST API easier to build, namely `gin`, `gorm` and `gorm.io/driver/mysql` as mysql driver. So we have to download it and do the command below in `aneka-zoo` project.
 
   <pre>

@@ -65,7 +65,6 @@ func NewAnimal(reqAndRes *gin.Context) {
 
 func UpdateAnimal(reqAndRes *gin.Context) {
 	animal := entities.Animal{}
-	// animalRequest := entities.Animal{}
 	response := make(map[string]interface{})
 	status := http.StatusOK
 	response["fields"] = helpers.GetFields(animal)
@@ -77,14 +76,16 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 			reqAndRes.JSON(status, response)
 		}
 	}()
+
+	// get id
 	id, err := strconv.Atoi(reqAndRes.Param("id"))
 
 	switch {
-	case err != nil:
+	case err != nil: // if error is exists
 		response["data"] = nil
 		response["message"] = "ID must be int or number!"
 
-	case services.AnimalExistsById(id):
+	case services.AnimalExistsById(id): // if animal with id is exists
 		err = reqAndRes.ShouldBindJSON(&animal)
 		if err != nil {
 			response["data"] = nil
@@ -95,7 +96,7 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 			response["message"] = "success updated data!"
 		}
 
-	case !(services.AnimalExistsById(id)):
+	case !(services.AnimalExistsById(id)): // if animal doesn't exists
 		err = reqAndRes.ShouldBindJSON(&animal)
 		if err != nil {
 			response["data"] = nil
@@ -110,6 +111,33 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 				response["message"] = "data does not exists, success created new data!"
 				response["data"] = animal
 			}
+		}
+	}
+
+	reqAndRes.JSON(status, response)
+}
+
+func DeleteAnimal(reqAndRes *gin.Context) {
+	response := make(map[string]interface{})
+	status := http.StatusOK
+	var deletedAnimal entities.Animal
+
+	// convert id string to int
+	id, err := strconv.Atoi(reqAndRes.Param("id"))
+
+	switch {
+	case err != nil: // if error is exists
+		response["data"] = nil
+		response["message"] = "ID must be int or number!"
+	case err == nil:
+		err = services.FindAnimalById(id, &deletedAnimal).Error
+		if err != nil {
+			response["data"] = nil
+			response["message"] = "data doesn't exists!"
+		} else {
+			services.Delete(&entities.Animal{}, id)
+			response["data"] = deletedAnimal
+			response["message"] = "success deleted data!"
 		}
 	}
 

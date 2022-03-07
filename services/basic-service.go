@@ -24,3 +24,10 @@ func Update(entity interface{}) (result *gorm.DB) {
 	return result
 }
 
+func Delete(entity interface{}, id int) (result *gorm.DB) {
+	result = database.GetConnection().Delete(entity, id)
+	if result.Error != nil {
+		log.Println("Error when delete data >>>", result.Error)
+	}
+	return
+}

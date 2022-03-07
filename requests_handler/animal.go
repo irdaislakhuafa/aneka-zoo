@@ -5,6 +5,7 @@ import (
 	"aneka-zoo/helpers"
 	"aneka-zoo/services"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -60,4 +61,57 @@ func NewAnimal(reqAndRes *gin.Context) {
 		status,
 		response,
 	)
+}
+
+func UpdateAnimal(reqAndRes *gin.Context) {
+	animal := entities.Animal{}
+	// animalRequest := entities.Animal{}
+	response := make(map[string]interface{})
+	status := http.StatusOK
+	response["fields"] = helpers.GetFields(animal)
+
+	defer func() {
+		if r := recover(); r != nil {
+			response["data"] = nil
+			response["message"] = r
+			reqAndRes.JSON(status, response)
+		}
+	}()
+	id, err := strconv.Atoi(reqAndRes.Param("id"))
+
+	switch {
+	case err != nil:
+		response["data"] = nil
+		response["message"] = "ID must be int or number!"
+
+	case services.AnimalExistsById(id):
+		err = reqAndRes.ShouldBindJSON(&animal)
+		if err != nil {
+			response["data"] = nil
+			response["message"] = "pleace check your JSON format!"
+		} else {
+			services.Update(&animal)
+			response["data"] = animal
+			response["message"] = "success updated data!"
+		}
+
+	case !(services.AnimalExistsById(id)):
+		err = reqAndRes.ShouldBindJSON(&animal)
+		if err != nil {
+			response["data"] = nil
+			response["message"] = "pleace check your JSON format!"
+		} else {
+			err = services.Update(&animal).Error
+			if err != nil {
+				// response["message"] = "data does not exists, success created new data!"
+				response["message"] = "data already exists"
+				response["data"] = nil
+			} else {
+				response["message"] = "data does not exists, success created new data!"
+				response["data"] = animal
+			}
+		}
+	}
+
+	reqAndRes.JSON(status, response)
 }

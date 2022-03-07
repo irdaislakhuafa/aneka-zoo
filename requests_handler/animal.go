@@ -201,5 +201,21 @@ func GetAnimalById(reqAndRes *gin.Context) {
 	}
 
 	reqAndRes.JSON(status, response)
+}
+func GetAllAnimals(reqAndRes *gin.Context) {
+	response := make(map[string]interface{})
+	status := http.StatusOK
+	var animals []entities.Animal
 
+	result := services.FindAll(&animals)
+
+	if result.Error != nil {
+		response["data"] = nil
+		response["message"] = result.Error.Error()
+	} else {
+		response["data"] = animals
+		response["message"] = "success find all data"
+	}
+
+	reqAndRes.JSON(status, response)
 }

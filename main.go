@@ -3,6 +3,7 @@ package main
 import (
 	"aneka-zoo/database"
 	"aneka-zoo/entities"
+	"aneka-zoo/services"
 	"flag"
 	"fmt"
 	"log"
@@ -38,16 +39,7 @@ func main() {
 	}
 
 	// auto migrate
-	err = nil
-	err = database.GetConnection().AutoMigrate(
-		&entities.Animal{},
-	)
-	if err != nil {
-		log.Fatal("Error when migrate to database :", err.Error())
-	} else {
-		database.SetConnection(db)
-		log.Println("Succes create migration model to database :", dbName)
-	}
+	services.AutoMigration(&entities.Animal{})
 
 	// create router gin
 	router := gin.Default()

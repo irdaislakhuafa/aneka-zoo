@@ -16,7 +16,7 @@ func Create(entity interface{}) (result *gorm.DB) {
 }
 
 func Update(entity interface{}) (result *gorm.DB) {
-	result = database.GetConnection().Debug().Updates(entity)
+	result = database.GetConnection().Debug().Statement.Save(entity)
 	err := result.Error
 	if err != nil {
 		log.Println("Error >>>", err.Error())

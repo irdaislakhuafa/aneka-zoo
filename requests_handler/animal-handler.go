@@ -94,15 +94,21 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 			response["message"] = "pleace check your JSON format!"
 		} else {
 			animal.ID = id
+			err = services.Update(&animal).Error
 			if services.AnimalExistsById(id) {
 				response["message"] = "success updated data!"
-				services.Update(&animal)
+				response["data"] = animal
 			} else {
-				services.Create(&animal)
-				response["message"] = "data does not exists, success created new data!"
-				// response["message"] = id
+				if err != nil {
+					response["data"] = nil
+					response["message"] = "data with same name already exists!"
+				} else {
+					animal = entities.Animal{}
+					services.FindAnimalById(id, &animal)
+					response["data"] = animal
+					response["message"] = "data does not exists, success created new data!"
+				}
 			}
-			response["data"] = animal
 
 		}
 
@@ -175,19 +181,20 @@ func DeleteAnimal(reqAndRes *gin.Context) {
 
 	reqAndRes.JSON(status, response)
 }
-
 func GetAnimalById(reqAndRes *gin.Context) {
 	response := make(map[string]interface{})
 	status := http.StatusOK
 
 	id, err := strconv.Atoi(reqAndRes.Param("id"))
+	animal := entities.Animal{}
+
+	response["fields"] = helpers.GetFields(animal) // get all fields "json" in struct
 
 	if err != nil {
 		status = http.StatusBadRequest
 		response["data"] = nil
 		response["message"] = "pleace check your JSON format!"
 	} else {
-		animal := entities.Animal{}
 		if services.AnimalExistsById(id) {
 			status = http.StatusOK
 			services.FindAnimalById(id, &animal)
@@ -210,9 +217,11 @@ func GetAllAnimals(reqAndRes *gin.Context) {
 	result := services.FindAll(&animals)
 
 	if result.Error != nil {
+		status = http.StatusInternalServerError
 		response["data"] = nil
 		response["message"] = result.Error.Error()
 	} else {
+		status = http.StatusOK
 		response["data"] = animals
 		response["message"] = "success find all data"
 	}

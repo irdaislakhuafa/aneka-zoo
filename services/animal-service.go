@@ -12,7 +12,7 @@ func FindAnimalById(id int, entity *entities.Animal) *gorm.DB {
 	result := database.GetConnection().First(entity, id)
 	err := result.Error
 	if err != nil {
-		log.Println("Error >>>", err.Error)
+		log.Println("Error >>>", err.Error())
 	}
 	return result
 }

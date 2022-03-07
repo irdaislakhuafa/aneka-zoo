@@ -25,17 +25,22 @@ func NewAnimal(reqAndRes *gin.Context) {
 	}()
 
 	err := reqAndRes.ShouldBindJSON(&newAnimal)
+	newAnimal.Name = strings.Trim(newAnimal.Name, " ")
+	newAnimal.Class = strings.Trim(newAnimal.Class, " ")
 
+	// if json format invalid with Animal struct
 	if err != nil {
 		status = http.StatusBadRequest
 		response["data"] = nil
 		response["message"] = "Please check your JSON format!"
-		response["fields"] = helpers.GetFields(newAnimal)
+		response["fields"] = helpers.GetFields(newAnimal) // get all fields "json" in struct
 	} else {
 		err = services.Create(&newAnimal).Error
+		// if error when create new data in database
 		if err != nil {
 			response["data"] = nil
 
+			// if error is duplicate entry
 			if strings.Contains(strings.ToLower(err.Error()), "duplicate entry") {
 				response["message"] = "data already exists!"
 			} else {
@@ -44,6 +49,7 @@ func NewAnimal(reqAndRes *gin.Context) {
 
 			response["fields"] = helpers.GetFields(newAnimal)
 		} else {
+			// if JSON format is valid and no error when save data
 			response["data"] = newAnimal
 			response["message"] = "success saved data!"
 			response["fields"] = helpers.GetFields(newAnimal)

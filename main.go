@@ -6,15 +6,12 @@ import (
 	"aneka-zoo/requests_handler"
 	"aneka-zoo/services"
 	"flag"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	var username, password, dbName, dbPort, dbHost, appPort string
-	// clear scree
-	fmt.Println("\033\143")
 
 	// get value option from command line
 	flag.StringVar(&username, "username", "root", "Put your database username here!")        // username

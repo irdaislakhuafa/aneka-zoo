@@ -77,7 +77,6 @@ func UpdateAnimal(reqAndRes *gin.Context) {
 			reqAndRes.JSON(status, response)
 		}
 	}()
-
 	id, err := strconv.Atoi(reqAndRes.Param("id"))
 
 	switch {

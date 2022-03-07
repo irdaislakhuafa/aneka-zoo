@@ -20,3 +20,7 @@ func AnimalExistsById(id int) bool {
 	effected, _ := FindAnimalById(id, &entities.Animal{}).Rows()
 	return effected != nil
 }
+func FindAll(animals *[]entities.Animal) (result *gorm.DB) {
+	result = database.GetConnection().Find(&animals)
+	return
+}

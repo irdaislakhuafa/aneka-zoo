@@ -16,7 +16,7 @@ func Create(entity interface{}) (result *gorm.DB) {
 }
 
 func Update(entity interface{}) (result *gorm.DB) {
-	result = database.GetConnection().Save(entity)
+	result = database.GetConnection().Debug().Updates(entity)
 	err := result.Error
 	if err != nil {
 		log.Println("Error >>>", err.Error())
@@ -24,3 +24,10 @@ func Update(entity interface{}) (result *gorm.DB) {
 	return result
 }
 
+func Delete(entity interface{}, id int) (result *gorm.DB) {
+	result = database.GetConnection().Delete(entity, id)
+	if result.Error != nil {
+		log.Println("Error when delete data >>>", result.Error)
+	}
+	return
+}

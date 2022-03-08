@@ -56,7 +56,7 @@ This is a simple rest api that I made using the Go-Lang programming language. In
 ### In this application I create 5 API urls which consist of :
 
 1. Url `/api/animal/new` to create new animal data with http method `POST`. If you enter the same or duplicate data it will return a response message `"data already exists!"` and the data will not be saved.
-2. Url `/api/animal/:id` to update or change data based on the id entered in the url. If the data is not in the database then the data will be saved as new data and this url uses http method `PUT`.
+2. Url `/api/animal/update/:id` to update or change data based on the id entered in the url. If the data is not in the database then the data will be saved as new data and this url uses http method `PUT`.
 3. Url `/api/animal/delete/:id` this url is used to delete data based on the `id` entered in the url and if the data doesn't exist it will return the message `"data doesn't exists!"` and this url uses http method `DELETE`.
 4. Url `/api/animal/get/:id` is used to search for `1` animal data based on the `id` entered from the url and if the data does not exist it will return the message `"data not found"`. This url uses http method `GET`.
 5. Url `/api/animal/get/all` is used to get `all` animals data in database. This url uses http method `GET`.
